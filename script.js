@@ -172,7 +172,7 @@ const courses = {
             id: 8,
             title: "Machine Efficiency",
             category: "efficiency",
-            icon: "⚡",
+            icon: "assets/efficiency.png",
             description: "Optimize flexographic machines for maximum efficiency and productivity.",
             level: "Advanced",
             duration: "6 weeks",
