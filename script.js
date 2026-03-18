@@ -55,7 +55,7 @@ const courses = {
             id: 3,
             title: "Flexographic Inks",
             category: "material",
-            icon: "🧪",
+            icon: "assets/inks.png",
             description: "Comprehensive guide to flexographic ink formulations, properties, and applications.",
             level: "Intermediate",
             duration: "4 weeks",
