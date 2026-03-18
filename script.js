@@ -124,7 +124,7 @@ const courses = {
             id: 6,
             title: "Flexographic Machines",
             category: "equipment",
-            icon: "⚙️",
+            icon: "assets/machines.png",
             description: "Deep dive into flexographic printing equipment, components, and maintenance.",
             level: "Intermediate",
             duration: "6 weeks",
