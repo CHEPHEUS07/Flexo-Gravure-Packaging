@@ -291,17 +291,26 @@ function loadCourses() {
 // Create course card HTML
 function createCourseCard(course) {
     const card = document.createElement('div');
-    card.className = `course-card ${course.category}`;
+    const isImagePath = course.icon.includes('/');
+    card.className = `course-card ${course.category} ${isImagePath ? 'has-image' : ''}`;
     card.onclick = () => openModal(course);
 
     const ratingStars = '⭐'.repeat(5);
 
-    const iconHtml = course.icon.includes('/') 
-        ? `<img src="${course.icon}" alt="${course.title}" class="course-card-image">`
-        : course.icon;
+    let topSection = '';
+    if (isImagePath) {
+        topSection = `
+            <div class="course-image-header">
+                <img src="${course.icon}" alt="${course.title}">
+                <div class="image-overlay"></div>
+            </div>
+        `;
+    } else {
+        topSection = `<div class="course-icon">${course.icon}</div>`;
+    }
 
     card.innerHTML = `
-        <div class="course-icon">${iconHtml}</div>
+        ${topSection}
         <div class="course-header">
             <h3 class="course-title">${course.title}</h3>
             <span class="course-category">${getCategoryLabel(course.category)}</span>
