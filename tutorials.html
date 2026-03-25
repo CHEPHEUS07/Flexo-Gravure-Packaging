@@ -21,11 +21,63 @@
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="course-videos.html" id="backToOverview" class="nav-link">Back to Overview</a></li>
+                <li><a href="#" class="nav-link" onclick="openNotesModal(event)">Notes</a></li>
             </ul>
         </div>
     </nav>
 
-    <section class="courses-section" style="padding-top: 6rem;">
+    <style>
+        .video-marquee-container {
+            overflow: hidden;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 2rem 0;
+            cursor: pointer;
+        }
+
+        .video-marquee-content {
+            display: flex;
+            gap: 3rem;
+            animation: marquee-scroll 40s linear infinite;
+            width: max-content;
+        }
+
+        .video-marquee-content:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes marquee-scroll {
+            0% {
+                transform: translateX(-50%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .video-card {
+            width: 450px;
+            flex-shrink: 0;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            transition: var(--transition);
+        }
+
+        .video-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+    </style>
+
+    <section class="courses-section" style="padding-top: 3rem;">
         <div class="courses-container" style="max-width: 1200px;">
             <div class="section-header" style="text-align: center; margin-bottom: 4rem;">
                 <span class="section-badge">Video Modules</span>
@@ -33,19 +85,43 @@
                 <p style="color: var(--text-secondary); margin-top: 1rem;">Watch and learn the industry-standard
                     techniques.</p>
             </div>
+        </div>
 
-            <div id="videoGrid" class="enrolled-grid"
-                style="grid-template-columns: repeat(2, 1fr); gap: 3rem; margin-bottom: 4rem;">
-                <!-- Videos will be injected here -->
+        <div class="video-marquee-container">
+            <div id="videoGrid" class="video-marquee-content">
+                <!-- Videos will be injected and duplicated here -->
             </div>
+        </div>
 
-            <div style="text-align: center; margin-bottom: 4rem;">
+        <div class="courses-container">
+            <div style="text-align: center; margin-top: 4rem; display: flex; justify-content: center; gap: 2rem;">
                 <button class="cta-button" onclick="window.history.back()">
                     <i class="fas fa-arrow-left"></i> Return to Syllabus
+                </button>
+                <button class="cta-button secondary" onclick="openNotesModal(event)">
+                    <i class="fas fa-book"></i> Access Course Notes
                 </button>
             </div>
         </div>
     </section>
+
+    <!-- Notes Modal -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNotesModal()">&times;</span>
+            <div class="auth-header" style="text-align: center;">
+                <h2>📚 Course Notes</h2>
+                <p id="notesSubtitle">Downloadable PDF resources for your learning</p>
+            </div>
+            <div id="notesList" class="enrolled-grid"
+                style="grid-template-columns: 1fr; gap: 1rem; margin-top: 1.5rem;">
+                <!-- PDF links will be injected here -->
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn-close" onclick="closeNotesModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -110,14 +186,11 @@
             }
 
             videoGrid.innerHTML = '';
-            selectedVideos.forEach(video => {
+            
+            // Generate video cards
+            const createCard = (video) => {
                 const card = document.createElement('div');
-                card.className = 'enrolled-card';
-                card.style.padding = '1rem';
-                card.style.background = 'var(--bg-glass)';
-                card.style.border = '1px solid var(--border)';
-                card.style.borderRadius = 'var(--radius-lg)';
-
+                card.className = 'video-card';
                 card.innerHTML = `
                     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
                         <iframe 
@@ -135,8 +208,84 @@
                         </div>
                     </div>
                 `;
-                videoGrid.appendChild(card);
+                return card;
+            };
+
+            // Add original videos
+            selectedVideos.forEach(video => {
+                videoGrid.appendChild(createCard(video));
             });
+
+            // Duplicate for seamless loop
+            selectedVideos.forEach(video => {
+                videoGrid.appendChild(createCard(video));
+            });
+        }
+
+        // Notes Modal Functions (Same as course-videos.html)
+        function openNotesModal(e) {
+            if (e) e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseTitle = urlParams.get('course') || 'General';
+
+            const notesList = document.getElementById('notesList');
+            const notesSubtitle = document.getElementById('notesSubtitle');
+            notesSubtitle.textContent = `PDF resources for: ${courseTitle}`;
+
+            const notesData = {
+                'Flexography': [
+                    { name: 'Ultimate Guide to Flexo Printing.pdf', file: '1539851715-Ultimate-Guide-to-Flexo-Printing.pdf' },
+                    { name: "Johnson's Notes.pdf", file: "Johnson's Notes.pdf" }
+                ],
+                'Gravure': [
+                    { name: 'Rotogravure Essentials.pdf', file: 'notes/gravure_essentials.pdf' },
+                    { name: 'Cylinder Engraving 101.pdf', file: 'notes/cylinder_engraving.pdf' }
+                ],
+                'default': [
+                    { name: 'General Packaging Overview.pdf', file: 'notes/general_packaging.pdf' },
+                    { name: 'Industry Standards.pdf', file: 'notes/standards.pdf' }
+                ]
+            };
+
+            let selectedNotes = notesData['default'];
+            for (let key in notesData) {
+                if (courseTitle.toLowerCase().includes(key.toLowerCase())) {
+                    selectedNotes = notesData[key];
+                    break;
+                }
+            }
+
+            notesList.innerHTML = '';
+            selectedNotes.forEach(note => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'enrolled-card';
+                noteItem.style.display = 'flex';
+                noteItem.style.justifyContent = 'space-between';
+                noteItem.style.alignItems = 'center';
+                noteItem.style.padding = '1rem 1.5rem';
+
+                noteItem.innerHTML = `
+                    <div style="display: flex; alignItems: center; gap: 1rem;">
+                        <span style="font-size: 1.5rem;">📄</span>
+                        <span style="font-weight: 500;">${note.name}</span>
+                    </div>
+                    <a href="${note.file}" download class="btn-explore" style="padding: 0.5rem 1rem; margin: 0; font-size: 0.9rem;">Download</a>
+                `;
+                notesList.appendChild(noteItem);
+            });
+
+            document.getElementById('notesModal').classList.add('show');
+        }
+
+        function closeNotesModal() {
+            document.getElementById('notesModal').classList.remove('show');
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('notesModal');
+            if (event.target == modal) {
+                closeNotesModal();
+            }
         }
     </script>
 </body>

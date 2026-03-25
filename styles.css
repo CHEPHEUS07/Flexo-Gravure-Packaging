@@ -1204,11 +1204,18 @@ body::before {
     background: var(--bg-glass);
     border: 1px solid var(--border);
     color: var(--text-secondary);
+    padding: 0.8rem 3rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.85rem !important;
 }
 
 .btn-close:hover {
     background: var(--bg-glass-strong);
     color: var(--text-primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 15px var(--primary-glow);
 }
 
 .btn-submit {
